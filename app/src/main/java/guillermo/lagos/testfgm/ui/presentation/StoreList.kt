@@ -1,12 +1,14 @@
 package guillermo.lagos.testfgm.ui.presentation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -39,7 +41,8 @@ fun StoreList(
 
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
-            state = scrollState
+            state = scrollState,
+            contentPadding = PaddingValues(bottom = 200.dp)
         ) {
             items(
                 count = lazyPagingItems.itemCount
@@ -52,18 +55,28 @@ fun StoreList(
             lazyPagingItems.apply {
                 when {
                     loadState.refresh is LoadState.Loading -> {
-                        item { CircularProgressIndicator() }
+                        item { PlaceholderItem() }
                     }
                     loadState.append is LoadState.Loading -> {
-                        item { CircularProgressIndicator() }
+                        item { PlaceholderItem() }
                     }
                     loadState.refresh is LoadState.Error -> {
                         val e = lazyPagingItems.loadState.refresh as LoadState.Error
-                        item { Text(text = "Error: ${e.error.localizedMessage}") }
+                        item {
+                            ErrorView(e.error.localizedMessage){
+                                lazyPagingItems.refresh()
+                            }
+                            // ErrorDialog(e.error.localizedMessage){}
+                        }
                     }
                     loadState.append is LoadState.Error -> {
                         val e = lazyPagingItems.loadState.append as LoadState.Error
-                        item { Text(text = "Error: ${e.error.localizedMessage}") }
+                        item {
+                            ErrorView(e.error.localizedMessage){
+                                lazyPagingItems.refresh()
+                            }
+                            // ErrorDialog(e.error.localizedMessage){}
+                        }
                     }
                 }
             }
@@ -77,7 +90,7 @@ fun StoreList(
                     }
                 },
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
+                    .align(Alignment.BottomEnd)
                     .padding(16.dp)
             ) {
                 Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Scroll to top")
@@ -85,3 +98,5 @@ fun StoreList(
         }
     }
 }
+
+
