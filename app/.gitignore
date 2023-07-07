@@ -1,0 +1,4 @@
+/build
+
+#ignore file with private props
+res/values/fgm_properties.xml
