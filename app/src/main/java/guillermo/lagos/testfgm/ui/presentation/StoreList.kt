@@ -66,7 +66,6 @@ fun StoreList(
                             ErrorView(e.error.localizedMessage){
                                 lazyPagingItems.refresh()
                             }
-                            // ErrorDialog(e.error.localizedMessage){}
                         }
                     }
                     loadState.append is LoadState.Error -> {
@@ -75,7 +74,6 @@ fun StoreList(
                             ErrorView(e.error.localizedMessage){
                                 lazyPagingItems.refresh()
                             }
-                            // ErrorDialog(e.error.localizedMessage){}
                         }
                     }
                 }

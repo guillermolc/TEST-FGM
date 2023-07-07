@@ -16,21 +16,20 @@ class StorePagingSource(
     ): LoadResult<Int, Store> {
         val page = params.key ?: 1
         return try {
-            when (
-                val response = fetchStoresUseCase.invoke(nextPageUrl)
-            ) {
-                is Resource.Success -> {
-                    nextPageUrl = response.data.nextPage
+            val response = fetchStoresUseCase.invoke(nextPageUrl)
+            when {
+                response.data != null -> {
+                    nextPageUrl = response.data!!.nextPage
                     LoadResult.Page(
-                        data = response.data.list,
+                        data = response.data!!.list,
                         prevKey = null,
-                        nextKey = if (response.data.nextPage != null) page + 1
+                        nextKey = if (response.data!!.nextPage != null) page + 1
                         else null
                     )
                 }
-                is Resource.Error -> LoadResult.Error(response.exception)
+                response.exception != null -> LoadResult.Error(response.exception!!)
+                else -> LoadResult.Error(Exception("--"))
             }
-
         } catch (e: Exception) {
             LoadResult.Error(e)
         }

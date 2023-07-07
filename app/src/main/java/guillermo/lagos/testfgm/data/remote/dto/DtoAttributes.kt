@@ -10,8 +10,6 @@ data class DtoAttributes(
     val active: Boolean,
     @SerialName("code")
     val code: String,
-    @SerialName("coordinates")
-    val coordinates: DtoCoordinates,
     @SerialName("full_address")
     val fullAddress: String,
     @SerialName("name")
