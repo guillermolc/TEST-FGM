@@ -1,46 +1,67 @@
 package guillermo.lagos.data
 
 import guillermo.lagos.data.repository.Repository
+import guillermo.lagos.data.source.LocalDataSource
 import guillermo.lagos.data.source.RemoteDataSource
+import guillermo.lagos.domain.Links
+import guillermo.lagos.domain.Page
 import guillermo.lagos.domain.Resource
 import guillermo.lagos.domain.Store
-import guillermo.lagos.domain.Stores
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
-import org.junit.Before
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert
 import org.junit.Test
 
 class RepositoryTest {
 
-    private lateinit var remoteDataSource: RemoteDataSource
-    private lateinit var repository: Repository
+    private val mockRemoteDataSource = mockk<RemoteDataSource>()
+    private val mockLocalDataSource = mockk<LocalDataSource>()
+    private val repository = Repository(mockRemoteDataSource, mockLocalDataSource)
 
-    @Before
-    fun setUp() {
-        remoteDataSource = mockk()
-        repository = Repository(remoteDataSource)
+    @Test
+    fun `test fetch && save stores with success`() = runTest {
+        val expectedPage = Page(
+            number = 1,
+            list = listOf(
+                Store(
+                    id = "1",
+                    name = "Store1",
+                    code = "S1",
+                    address = "Address1"
+                )
+            ),
+            links = Links(
+                first = "first",
+                last = "last",
+                current = "current"
+            )
+        )
+        val expectedResponse = Resource.Success(expectedPage)
+        coEvery { mockRemoteDataSource.fetchStores(any()) } returns expectedResponse
+        coEvery { mockLocalDataSource.insertPageWithStoresAndLinks(any()) } returns Unit
+        coEvery { mockLocalDataSource.getPageWithStoresAndLinks(any()) } returns flowOf(expectedPage)
+        val actualResource = repository.fetchAndSaveStores(null)
+        Assert.assertEquals(expectedResponse, actualResource)
+        coVerify { mockRemoteDataSource.fetchStores(null) }
+        coVerify { mockLocalDataSource.insertPageWithStoresAndLinks(expectedPage) }
+        coVerify { mockLocalDataSource.getPageWithStoresAndLinks(expectedPage.number) }
     }
 
     @Test
-    fun `fetchStores returns success resource when remote data source fetches stores successfully`() = runBlocking {
-        val nextPage = "test_page"
-        val expectedStore = Store(name = "Test", code = "1", address = "Test Address")
-        val expectedStores = Stores(listOf(expectedStore), nextPage)
-        val expectedResource = Resource(data = expectedStores)
-        coEvery { remoteDataSource.fetchStores(nextPage) } returns expectedResource
-        val result = repository.fetchStores(nextPage)
-        assertEquals(expectedResource, result)
-    }
-
-    @Test
-    fun `fetchStores returns error resource when remote data source fetch fails`() = runBlocking {
-        val nextPage = "test_page"
-        val expectedException = Exception("Fetch failed")
-        val expectedResource = Resource<Stores>(exception = expectedException)
-        coEvery { remoteDataSource.fetchStores(nextPage) } returns expectedResource
-        val result = repository.fetchStores(nextPage)
-        assertEquals(expectedResource, result)
+    fun `test fetch && save stores with error`() = runTest {
+        val expectedException = RuntimeException("Error")
+        val expectedResponse = Resource.Error(expectedException)
+        coEvery { mockRemoteDataSource.fetchStores(any()) } returns expectedResponse
+        val actualResource = repository.fetchAndSaveStores(null)
+        Assert.assertEquals(expectedResponse, actualResource)
+        coVerify { mockRemoteDataSource.fetchStores(null) }
+        coVerify(exactly = 0) { mockLocalDataSource.insertPageWithStoresAndLinks(any()) }
+        coVerify(exactly = 0) { mockLocalDataSource.getPageWithStoresAndLinks(any()) }
     }
 }
+
+
+

@@ -5,16 +5,13 @@
       <entry key="FetchStoresUseCaseTest">
         <State />
       </entry>
-      <entry key="MainActivityTest">
+      <entry key="LocalDataSourceImplTest">
         <State />
       </entry>
-      <entry key="MainActivityTest (1)">
+      <entry key="RepositoryTest">
         <State />
       </entry>
-      <entry key="StoreItemTest">
-        <State />
-      </entry>
-      <entry key="StoreListTest">
+      <entry key="ResourceTest">
         <State />
       </entry>
       <entry key="app">
