@@ -6,7 +6,7 @@ A simple app to view stores.
 
 
 
-# Technologies Used:
+# Technologies Used
 Kotlin, 
 MVVM, 
 Hilt, 
@@ -34,9 +34,7 @@ git clone https://github.com/guillermolc/TEST-FGM
 
 3.- Open the project
 
-4.- Create a values file on *app/src/main/res/values/ReplaceWithUrFileName.xml*  
-
-5.- Copy this and replace the values
+4.- Replace the values on *app/src/main/res/values/fgm_properties.xml*
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
