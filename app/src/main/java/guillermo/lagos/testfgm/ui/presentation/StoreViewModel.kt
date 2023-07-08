@@ -20,8 +20,7 @@ constructor(
             pageSize = 10,
             prefetchDistance = 2,
             enablePlaceholders = false
-        )
-    ) {
-        StorePagingSource(fetchStoresUseCase)
-    }.flow.cachedIn(viewModelScope)
+        ),
+        pagingSourceFactory = { StorePagingSource(fetchStoresUseCase) }
+    ).flow.cachedIn(viewModelScope)
 }

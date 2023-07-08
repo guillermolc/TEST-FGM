@@ -6,8 +6,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DtoAttributes(
-    @SerialName("active")
-    val active: Boolean,
     @SerialName("code")
     val code: String,
     @SerialName("full_address")

@@ -1,6 +1,6 @@
 package guillermo.lagos.domain
 
-data class Resource<out T>(
-    val data: T? = null,
-    val exception: Throwable? = null
-)
+sealed class Resource<out T> {
+    data class Success<out T>(val data: T) : Resource<T>()
+    data class Error(val exception: Throwable) : Resource<Nothing>()
+}

@@ -1,6 +1,7 @@
 package guillermo.lagos.domain
 
-data class Stores (
+data class Page(
+    val number: Int,
     val list: List<Store>,
-    val nextPage: String?
+    val links: Links
 )

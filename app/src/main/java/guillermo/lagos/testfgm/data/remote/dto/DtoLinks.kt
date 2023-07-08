@@ -11,7 +11,7 @@ data class DtoLinks(
     @SerialName("last")
     val last: String,
     @SerialName("next")
-    val next: String,
+    val next: String? = null,
     @SerialName("prev")
     val prev: String? = null,
     @SerialName("self")

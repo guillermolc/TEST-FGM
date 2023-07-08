@@ -9,26 +9,24 @@ import guillermo.lagos.usecases.FetchStoresUseCase
 class StorePagingSource(
     private val fetchStoresUseCase: FetchStoresUseCase,
     private var nextPageUrl: String? = null
-) : PagingSource<Int, Store>() {
+) : PagingSource<String, Store>() {
 
     override suspend fun load(
-        params: LoadParams<Int>
-    ): LoadResult<Int, Store> {
-        val page = params.key ?: 1
+        params: LoadParams<String>
+    ): LoadResult<String, Store> {
         return try {
-            val response = fetchStoresUseCase.invoke(nextPageUrl)
-            when {
-                response.data != null -> {
-                    nextPageUrl = response.data!!.nextPage
+            when (
+                val response = fetchStoresUseCase.invoke(nextPageUrl)
+            ) {
+                is Resource.Success -> {
+                    nextPageUrl = response.data.links.next
                     LoadResult.Page(
-                        data = response.data!!.list,
+                        data = response.data.list,
                         prevKey = null,
-                        nextKey = if (response.data!!.nextPage != null) page + 1
-                        else null
+                        nextKey = nextPageUrl
                     )
                 }
-                response.exception != null -> LoadResult.Error(response.exception!!)
-                else -> LoadResult.Error(Exception("--"))
+                is Resource.Error -> LoadResult.Error(response.exception)
             }
         } catch (e: Exception) {
             LoadResult.Error(e)
@@ -36,6 +34,7 @@ class StorePagingSource(
     }
 
     override fun getRefreshKey(
-        state: PagingState<Int, Store>
-    ): Int? = null
+        state: PagingState<String, Store>
+    ): String? = nextPageUrl
 }
+

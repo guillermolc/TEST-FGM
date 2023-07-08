@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import guillermo.lagos.data.repository.Repository
+import guillermo.lagos.data.source.LocalDataSource
 import guillermo.lagos.data.source.RemoteDataSource
 
 @Module
@@ -12,8 +13,10 @@ import guillermo.lagos.data.source.RemoteDataSource
 class DataModule {
     @Provides
     fun repository(
-        remoteDataSource: RemoteDataSource
+        remoteDataSource: RemoteDataSource,
+        localDataSource: LocalDataSource
     ) = Repository(
-        remoteDataSource = remoteDataSource
+        remoteDataSource = remoteDataSource,
+        localDataSource = localDataSource
     )
 }

@@ -1,16 +1,25 @@
 package guillermo.lagos.testfgm.data.remote
 
+import guillermo.lagos.domain.Links
+import guillermo.lagos.domain.Page
 import guillermo.lagos.domain.Store
-import guillermo.lagos.domain.Stores
 import guillermo.lagos.testfgm.data.remote.dto.DtoStoresResponse
 
-fun DtoStoresResponse.toStores() = Stores(
+fun DtoStoresResponse.toPage() = Page(
+    number = meta.pagination.currentPage,
     list = data.map {
         Store(
+            id = it.id,
             name = it.attributes.name,
             code = it.attributes.code,
             address = it.attributes.fullAddress
         )
     },
-    nextPage = links.next
+    links = Links(
+        first = links.first,
+        last = links.last,
+        prev = links.prev,
+        next = links.next,
+        current = links.self
+    )
 )

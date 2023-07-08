@@ -1,13 +1,13 @@
 package guillermo.lagos.usecases
 
 import guillermo.lagos.data.repository.Repository
+import guillermo.lagos.domain.Page
+import guillermo.lagos.domain.Resource
 
 class FetchStoresUseCase(
     private val repository: Repository
 ) {
-    suspend fun invoke(
+    suspend operator fun invoke(
         nextPage: String?
-    ) = repository.fetchStores(
-        nextPage = nextPage
-    )
+    ): Resource<Page> = repository.fetchAndSaveStores(nextPage)
 }

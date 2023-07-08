@@ -2,8 +2,8 @@ package guillermo.lagos.testfgm.data.remote
 
 import android.util.Log
 import guillermo.lagos.data.source.RemoteDataSource
+import guillermo.lagos.domain.Page
 import guillermo.lagos.domain.Resource
-import guillermo.lagos.domain.Stores
 import guillermo.lagos.testfgm.data.remote.dto.DtoStoresResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.receive
@@ -26,7 +26,7 @@ class RemoteDataSourceImpl @Inject constructor(
 ): RemoteDataSource {
     override suspend fun fetchStores(
         nextPage: String?
-    ): Resource<Stores> = try {
+    ): Resource<Page> = try {
         if (
             !defaultUrl.isNullOrEmpty()
             &&
@@ -35,23 +35,23 @@ class RemoteDataSourceImpl @Inject constructor(
             !company.isNullOrEmpty()
         ){
             val url = nextPage ?: defaultUrl
-            val response: HttpResponse = client.get(url ?: "") {
+            val response: HttpResponse = client.get(url) {
                 headers {
-                    append(HttpHeaders.Authorization, (token ?: ""))
-                    append("X-Company-Uuid", (company ?: ""))
+                    append(HttpHeaders.Authorization, token)
+                    append("X-Company-Uuid", company)
                 }
                 contentType(ContentType.Application.Json)
                 parameter("per_page", 10)
             }
             if (response.status == HttpStatusCode.OK) response.receive<DtoStoresResponse>()
-                .toStores()
+                .toPage()
                 .let {
                     Log.e(this.javaClass.name, "URL: $url")
-                    Resource(data = it)
+                    Resource.Success(data = it)
                 }
-            else Resource(exception = Exception("Server responded with status ${response.status.value}"))
-        } else Resource(exception = Exception("Network parameters are missing"))
+            else Resource.Error(exception = Exception("Server responded with status ${response.status.value}"))
+        } else Resource.Error(exception = Exception("Network parameters are missing"))
     } catch (e: ResponseException) {
-        Resource(exception = e)
+        Resource.Error(exception = e)
     }
 }

@@ -9,7 +9,5 @@ data class DtoData(
     @SerialName("attributes")
     val attributes: DtoAttributes,
     @SerialName("id")
-    val id: String,
-    @SerialName("type")
-    val type: String
+    val id: String
 )

@@ -64,6 +64,7 @@ fun StoreItem(store: Store) {
 fun PreviewStoreItem() {
     StoreItem(
         store = Store(
+            "1",
             "test",
             "test",
             "test"
